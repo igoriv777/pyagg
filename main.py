@@ -30,7 +30,7 @@ def run(args: argparse.Namespace):
     with open(args.kernel, mode="r") as f:
         source = f.read()
 
-    program = cl.Program(ctx, source).build()
+    program = cl.Program(ctx, source).build(options="-cl-std=CL3.0")
 
     prefix_bytes = prefix.encode("utf-8")
 
