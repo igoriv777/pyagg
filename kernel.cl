@@ -1,29 +1,27 @@
-typedef int fe[10];
-
 typedef struct {
-  fe X;
-  fe Y;
-  fe Z;
+  int X[10];
+  int Y[10];
+  int Z[10];
 } ge_p2;
 
 typedef struct {
-  fe X;
-  fe Y;
-  fe Z;
-  fe T;
+  int X[10];
+  int Y[10];
+  int Z[10];
+  int T[10]
 } ge_p3;
 
 typedef struct {
-  fe X;
-  fe Y;
-  fe Z;
-  fe T;
+  int X[10];
+  int Y[10];
+  int Z[10];
+  int T[10];
 } ge_p1p1;
 
 typedef struct {
-  fe yplusx;
-  fe yminusx;
-  fe xy2d;
+  int yplusx[10];
+  int yminusx[10];
+  int xy2d[10];
 } ge_precomp;
 
 typedef unsigned long uint64_t;
@@ -39,19 +37,19 @@ void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p);
 void ge_p3_0(ge_p3 *h);
 void ge_p3_dbl(ge_p1p1 *r, const ge_p3 *p);
 void ge_p3_to_p2(ge_p2 *r, const ge_p3 *p);
-void fe_0(fe h);
-void fe_1(fe h);
-void fe_tobytes(unsigned char *s, const fe h);
-void fe_copy(fe h, const fe f);
-int fe_isnegative(const fe f);
-void fe_cmov(fe f, const fe g, unsigned int b);
-void fe_neg(fe h, const fe f);
-void fe_add(fe h, const fe f, const fe g);
-void fe_invert(fe out, const fe z);
-void fe_sq(fe h, const fe f);
-void fe_sq2(fe h, const fe f);
-void fe_mul(fe h, const fe f, const fe g);
-void fe_sub(fe h, const fe f, const fe g);
+void fe_0(int* h);
+void fe_1(int* h);
+void fe_tobytes(unsigned char *s, const int* h);
+void fe_copy(int* h, const int* f);
+int fe_isnegative(const int* f);
+void fe_cmov(int* f, const int* g, unsigned int b);
+void fe_neg(int* h, const int* f);
+void fe_add(int* h, const int* f, const int* g);
+void fe_invert(int* out, const int* z);
+void fe_sq(int* h, const int* f);
+void fe_sq2(int* h, const int* f);
+void fe_mul(int* h, const int* f, const int* g);
+void fe_sub(int* h, const int* f, const int* g);
 
 void *copy_mem(void *dest, const void *src, int len) {
   char *d = dest;
@@ -257,7 +255,7 @@ void sha512_calculate(void const *buf, uint buf_size, unsigned char *Digest) {
   sha512_finalise(&context, Digest);
 }
 
-void fe_0(fe h) {
+void fe_0(int* h) {
   h[0] = 0;
   h[1] = 0;
   h[2] = 0;
@@ -270,7 +268,7 @@ void fe_0(fe h) {
   h[9] = 0;
 }
 
-void fe_1(fe h) {
+void fe_1(int* h) {
   h[0] = 1;
   h[1] = 0;
   h[2] = 0;
@@ -283,7 +281,7 @@ void fe_1(fe h) {
   h[9] = 0;
 }
 
-void fe_add(fe h, const fe f, const fe g) {
+void fe_add(int* h, const int* f, const int* g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -327,7 +325,7 @@ void fe_add(fe h, const fe f, const fe g) {
   h[9] = h9;
 }
 
-void fe_cmov(fe f, const fe g, unsigned int b) {
+void fe_cmov(int* f, const int* g, unsigned int b) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -383,7 +381,7 @@ void fe_cmov(fe f, const fe g, unsigned int b) {
   f[9] = f9 ^ x9;
 }
 
-void fe_copy(fe h, const fe f) {
+void fe_copy(int* h, const int* f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -407,11 +405,11 @@ void fe_copy(fe h, const fe f) {
   h[9] = f9;
 }
 
-void fe_invert(fe out, const fe z) {
-  fe t0;
-  fe t1;
-  fe t2;
-  fe t3;
+void fe_invert(int* out, const int* z) {
+  int t0[10];
+  int t1[10];
+  int t2[10];
+  int t3[10];
   int i;
 
   fe_sq(t0, z);
@@ -493,7 +491,7 @@ void fe_invert(fe out, const fe z) {
   fe_mul(out, t1, t0);
 }
 
-int fe_isnegative(const fe f) {
+int fe_isnegative(const int* f) {
   unsigned char s[32];
 
   fe_tobytes(s, f);
@@ -501,7 +499,7 @@ int fe_isnegative(const fe f) {
   return s[0] & 1;
 }
 
-void fe_mul(fe h, const fe f, const fe g) {
+void fe_mul(int* h, const int* f, const int* g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -722,7 +720,7 @@ void fe_mul(fe h, const fe f, const fe g) {
   h[9] = (int)h9;
 }
 
-void fe_neg(fe h, const fe f) {
+void fe_neg(int* h, const int* f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -756,7 +754,7 @@ void fe_neg(fe h, const fe f) {
   h[9] = h9;
 }
 
-void fe_sq(fe h, const fe f) {
+void fe_sq(int* h, const int* f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -903,7 +901,7 @@ void fe_sq(fe h, const fe f) {
   h[9] = (int)h9;
 }
 
-void fe_sq2(fe h, const fe f) {
+void fe_sq2(int* h, const int* f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -1060,7 +1058,7 @@ void fe_sq2(fe h, const fe f) {
   h[9] = (int)h9;
 }
 
-void fe_sub(fe h, const fe f, const fe g) {
+void fe_sub(int* h, const int* f, const int* g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -1104,7 +1102,7 @@ void fe_sub(fe h, const fe f, const fe g) {
   h[9] = h9;
 }
 
-void fe_tobytes(unsigned char *s, const fe h) {
+void fe_tobytes(unsigned char *s, const int* h) {
   int h0 = h[0];
   int h1 = h[1];
   int h2 = h[2];
@@ -3320,7 +3318,7 @@ static const ge_precomp base[32][8] = {
 };
 
 void ge_madd(ge_p1p1 *r, const ge_p3 *p, const ge_precomp *q) {
-  fe t0;
+  int t0[10];
   fe_add(r->X, p->Y, p->X);
   fe_sub(r->Y, p->Y, p->X);
   fe_mul(r->Z, r->X, q->yplusx);
@@ -3347,7 +3345,7 @@ void ge_p1p1_to_p3(ge_p3 *r, const ge_p1p1 *p) {
 }
 
 void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p) {
-  fe t0;
+  int t0[10];
 
   fe_sq(r->X, p->X);
   fe_sq(r->Z, p->Y);
@@ -3380,9 +3378,9 @@ void ge_p3_to_p2(ge_p2 *r, const ge_p3 *p) {
 }
 
 void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {
-  fe recip;
-  fe x;
-  fe y;
+  int recip[10];
+  int x[10];
+  int y[10];
   fe_invert(recip, h->Z);
   fe_mul(x, h->X, recip);
   fe_mul(y, h->Y, recip);
