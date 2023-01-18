@@ -1,3 +1,5 @@
+This repository uses a modified kernel.cl, originally licensed under the following conditions:
+
 The MIT License (MIT)
 
 Copyright (c) 2021 iIIusi0n
