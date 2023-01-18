@@ -11,8 +11,6 @@ KEY_SIZE = 32
 
 
 class Batch(NamedTuple):
-    prefix: str
-    count: int
     seeds: np.ndarray
     run_kernel_event: cl.event_info
 
@@ -33,6 +31,7 @@ def run(args: argparse.Namespace):
     program = cl.Program(ctx, source).build(options="-cl-std=CL3.0")
 
     prefix_bytes = prefix.encode("utf-8")
+    expected_len = len(prefix_bytes)
 
     seed_buffer = cl.Buffer(ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=count * KEY_SIZE)
     prefix_buffer = cl.Buffer(ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=len(prefix_bytes))
@@ -49,8 +48,6 @@ def run(args: argparse.Namespace):
         seeds = np.random.randint(0, 255, count * KEY_SIZE, dtype='uint8')
         cl.enqueue_copy(queue, seed_buffer, seeds, is_blocking=False)
         batch = Batch(
-            prefix=prefix,
-            count=count,
             seeds=seeds,
             run_kernel_event=kernel(queue, [count], None, seed_buffer, prefix_buffer, counts_buffer)
         )
@@ -74,11 +71,10 @@ def run(args: argparse.Namespace):
         cl.wait_for_events(
             [batch.run_kernel_event, copy_counts])
 
-        total += batch.count
+        total += count
 
         seeds = batch.seeds
-        expected = len(batch.prefix)
-        indices = np.where(counts == expected)[0]
+        indices = np.where(counts == expected_len)[0]
 
         for i in indices:
             phrases = algosdk.mnemonic._from_key(bytes(seeds[i * KEY_SIZE:(i + 1) * KEY_SIZE]))
