@@ -33,8 +33,10 @@ def run(args: argparse.Namespace):
     prefix_bytes = prefix.encode("utf-8")
     expected_len = len(prefix_bytes)
 
-    seed_buffer = cl.Buffer(ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=count * KEY_SIZE)
-    prefix_buffer = cl.Buffer(ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=len(prefix_bytes))
+    seed_buffer = cl.Buffer(
+        ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=count * KEY_SIZE)
+    prefix_buffer = cl.Buffer(
+        ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=len(prefix_bytes))
     counts_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, size=count)
 
     kernel = program.ed25519_create_keypair
@@ -49,14 +51,15 @@ def run(args: argparse.Namespace):
         cl.enqueue_copy(queue, seed_buffer, seeds, is_blocking=False)
         batch = Batch(
             seeds=seeds,
-            run_kernel_event=kernel(queue, [count], None, seed_buffer, prefix_buffer, counts_buffer)
+            run_kernel_event=kernel(
+                queue, [count], None, seed_buffer, prefix_buffer, counts_buffer)
         )
 
         return batch
 
     batch = send_next_batch()
 
-    start = None
+    start: float = 0
     if benchmark:
         start = time.time()
 
@@ -64,7 +67,8 @@ def run(args: argparse.Namespace):
     found = 0
 
     while found < left:
-        copy_counts = cl.enqueue_copy(queue, counts, counts_buffer, is_blocking=False)
+        copy_counts = cl.enqueue_copy(
+            queue, counts, counts_buffer, is_blocking=False)
 
         next_batch = send_next_batch()
 
@@ -77,7 +81,8 @@ def run(args: argparse.Namespace):
         indices = np.where(counts == expected_len)[0]
 
         for i in indices:
-            phrases = algosdk.mnemonic._from_key(bytes(seeds[i * KEY_SIZE:(i + 1) * KEY_SIZE]))
+            phrases = algosdk.mnemonic._from_key(
+                bytes(seeds[i * KEY_SIZE:(i + 1) * KEY_SIZE]))
             pk = algosdk.mnemonic.to_private_key(phrases)
             pk_addr = algosdk.account.address_from_private_key(pk)
 
@@ -97,7 +102,11 @@ def run(args: argparse.Namespace):
         if delta > 0:
             avg = total / delta
 
-        print("Total: %d, matching: %d, time: %s, avg: %d keys/s" % (total, found, delta, avg))
+        print("--- Benchmark Result")
+        print("Devices: %s" % ", ".join(
+            ["%s" % (d.name) for d in ctx.devices]))
+        print("Total: %d keys, matching: %d, time: %.02fs, avg: %d keys/s" %
+              (total, found, delta, avg))
 
 
 if __name__ == "__main__":

@@ -37,24 +37,25 @@ void ge_p2_dbl(ge_p1p1 *r, const ge_p2 *p);
 void ge_p3_0(ge_p3 *h);
 void ge_p3_dbl(ge_p1p1 *r, const ge_p3 *p);
 void ge_p3_to_p2(ge_p2 *r, const ge_p3 *p);
-void fe_0(int* h);
-void fe_1(int* h);
-void fe_tobytes(unsigned char *s, const int* h);
-void fe_copy(int* h, const int* f);
-int fe_isnegative(const int* f);
-void fe_cmov(int* f, const int* g, unsigned int b);
-void fe_neg(int* h, const int* f);
-void fe_add(int* h, const int* f, const int* g);
-void fe_invert(int* out, const int* z);
-void fe_sq(int* h, const int* f);
-void fe_sq2(int* h, const int* f);
-void fe_mul(int* h, const int* f, const int* g);
-void fe_sub(int* h, const int* f, const int* g);
+void fe_0(int *h);
+void fe_1(int *h);
+void fe_tobytes(unsigned char *s, const int *h);
+void fe_copy(int *h, const int *f);
+int fe_isnegative(const int *f);
+void fe_cmov(int *f, const int *g, unsigned int b);
+void fe_neg(int *h, const int *f);
+void fe_add(int *h, const int *f, const int *g);
+void fe_invert(int *out, const int *z);
+void fe_sq(int *h, const int *f);
+void fe_sq2(int *h, const int *f);
+void fe_mul(int *h, const int *f, const int *g);
+void fe_sub(int *h, const int *f, const int *g);
 
 void *copy_mem(void *dest, const void *src, int len) {
   char *d = dest;
   const char *s = src;
-  while (len--) *d++ = *s++;
+  while (len--)
+    *d++ = *s++;
   return dest;
 }
 
@@ -62,27 +63,27 @@ void *copy_mem(void *dest, const void *src, int len) {
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
-#define LOAD64H(x, y)                                                     \
-  {                                                                       \
-    x = (((uint64_t)((y)[0] & 255)) << 56) |                              \
-        (((uint64_t)((y)[1] & 255)) << 48) |                              \
-        (((uint64_t)((y)[2] & 255)) << 40) |                              \
-        (((uint64_t)((y)[3] & 255)) << 32) |                              \
-        (((uint64_t)((y)[4] & 255)) << 24) |                              \
-        (((uint64_t)((y)[5] & 255)) << 16) |                              \
-        (((uint64_t)((y)[6] & 255)) << 8) | (((uint64_t)((y)[7] & 255))); \
+#define LOAD64H(x, y)                                                          \
+  {                                                                            \
+    x = (((uint64_t)((y)[0] & 255)) << 56) |                                   \
+        (((uint64_t)((y)[1] & 255)) << 48) |                                   \
+        (((uint64_t)((y)[2] & 255)) << 40) |                                   \
+        (((uint64_t)((y)[3] & 255)) << 32) |                                   \
+        (((uint64_t)((y)[4] & 255)) << 24) |                                   \
+        (((uint64_t)((y)[5] & 255)) << 16) |                                   \
+        (((uint64_t)((y)[6] & 255)) << 8) | (((uint64_t)((y)[7] & 255)));      \
   }
 
-#define STORE64H(x, y)                     \
-  {                                        \
-    (y)[0] = (uint8_t)(((x) >> 56) & 255); \
-    (y)[1] = (uint8_t)(((x) >> 48) & 255); \
-    (y)[2] = (uint8_t)(((x) >> 40) & 255); \
-    (y)[3] = (uint8_t)(((x) >> 32) & 255); \
-    (y)[4] = (uint8_t)(((x) >> 24) & 255); \
-    (y)[5] = (uint8_t)(((x) >> 16) & 255); \
-    (y)[6] = (uint8_t)(((x) >> 8) & 255);  \
-    (y)[7] = (uint8_t)((x)&255);           \
+#define STORE64H(x, y)                                                         \
+  {                                                                            \
+    (y)[0] = (uint8_t)(((x) >> 56) & 255);                                     \
+    (y)[1] = (uint8_t)(((x) >> 48) & 255);                                     \
+    (y)[2] = (uint8_t)(((x) >> 40) & 255);                                     \
+    (y)[3] = (uint8_t)(((x) >> 32) & 255);                                     \
+    (y)[4] = (uint8_t)(((x) >> 24) & 255);                                     \
+    (y)[5] = (uint8_t)(((x) >> 16) & 255);                                     \
+    (y)[6] = (uint8_t)(((x) >> 8) & 255);                                      \
+    (y)[7] = (uint8_t)((x)&255);                                               \
   }
 
 #define SHA512_HASH_SIZE (512 / 8)
@@ -134,10 +135,10 @@ static const uint64_t K[80] = {
 #define Gamma0(x) (S(x, 1) ^ S(x, 8) ^ R(x, 7))
 #define Gamma1(x) (S(x, 19) ^ S(x, 61) ^ R(x, 6))
 
-#define Sha512Round(a, b, c, d, e, f, g, h, i)    \
-  t0 = h + Sigma1(e) + Ch(e, f, g) + K[i] + W[i]; \
-  t1 = Sigma0(a) + Maj(a, b, c);                  \
-  d += t0;                                        \
+#define Sha512Round(a, b, c, d, e, f, g, h, i)                                 \
+  t0 = h + Sigma1(e) + Ch(e, f, g) + K[i] + W[i];                              \
+  t1 = Sigma0(a) + Maj(a, b, c);                                               \
+  d += t0;                                                                     \
   h = t0 + t1;
 
 static void transform_function(sha512_ctx *ctx, uint8_t const *buf) {
@@ -255,7 +256,7 @@ void sha512_calculate(void const *buf, uint buf_size, unsigned char *Digest) {
   sha512_finalise(&context, Digest);
 }
 
-void fe_0(int* h) {
+void fe_0(int *h) {
   h[0] = 0;
   h[1] = 0;
   h[2] = 0;
@@ -268,7 +269,7 @@ void fe_0(int* h) {
   h[9] = 0;
 }
 
-void fe_1(int* h) {
+void fe_1(int *h) {
   h[0] = 1;
   h[1] = 0;
   h[2] = 0;
@@ -281,7 +282,7 @@ void fe_1(int* h) {
   h[9] = 0;
 }
 
-void fe_add(int* h, const int* f, const int* g) {
+void fe_add(int *h, const int *f, const int *g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -325,7 +326,7 @@ void fe_add(int* h, const int* f, const int* g) {
   h[9] = h9;
 }
 
-void fe_cmov(int* f, const int* g, unsigned int b) {
+void fe_cmov(int *f, const int *g, unsigned int b) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -381,7 +382,7 @@ void fe_cmov(int* f, const int* g, unsigned int b) {
   f[9] = f9 ^ x9;
 }
 
-void fe_copy(int* h, const int* f) {
+void fe_copy(int *h, const int *f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -405,7 +406,7 @@ void fe_copy(int* h, const int* f) {
   h[9] = f9;
 }
 
-void fe_invert(int* out, const int* z) {
+void fe_invert(int *out, const int *z) {
   int t0[10];
   int t1[10];
   int t2[10];
@@ -491,7 +492,7 @@ void fe_invert(int* out, const int* z) {
   fe_mul(out, t1, t0);
 }
 
-int fe_isnegative(const int* f) {
+int fe_isnegative(const int *f) {
   unsigned char s[32];
 
   fe_tobytes(s, f);
@@ -499,7 +500,7 @@ int fe_isnegative(const int* f) {
   return s[0] & 1;
 }
 
-void fe_mul(int* h, const int* f, const int* g) {
+void fe_mul(int *h, const int *f, const int *g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -634,26 +635,25 @@ void fe_mul(int* h, const int* f, const int* g) {
   long f9g7_38 = f9_2 * (long)g7_19;
   long f9g8_19 = f9 * (long)g8_19;
   long f9g9_38 = f9_2 * (long)g9_19;
-  long h0 = f0g0 + f1g9_38 + f2g8_19 + f3g7_38 + f4g6_19 + f5g5_38 +
-                 f6g4_19 + f7g3_38 + f8g2_19 + f9g1_38;
+  long h0 = f0g0 + f1g9_38 + f2g8_19 + f3g7_38 + f4g6_19 + f5g5_38 + f6g4_19 +
+            f7g3_38 + f8g2_19 + f9g1_38;
   long h1 = f0g1 + f1g0 + f2g9_19 + f3g8_19 + f4g7_19 + f5g6_19 + f6g5_19 +
-                 f7g4_19 + f8g3_19 + f9g2_19;
+            f7g4_19 + f8g3_19 + f9g2_19;
   long h2 = f0g2 + f1g1_2 + f2g0 + f3g9_38 + f4g8_19 + f5g7_38 + f6g6_19 +
-                 f7g5_38 + f8g4_19 + f9g3_38;
-  long h3 = f0g3 + f1g2 + f2g1 + f3g0 + f4g9_19 + f5g8_19 + f6g7_19 +
-                 f7g6_19 + f8g5_19 + f9g4_19;
-  long h4 = f0g4 + f1g3_2 + f2g2 + f3g1_2 + f4g0 + f5g9_38 + f6g8_19 +
-                 f7g7_38 + f8g6_19 + f9g5_38;
+            f7g5_38 + f8g4_19 + f9g3_38;
+  long h3 = f0g3 + f1g2 + f2g1 + f3g0 + f4g9_19 + f5g8_19 + f6g7_19 + f7g6_19 +
+            f8g5_19 + f9g4_19;
+  long h4 = f0g4 + f1g3_2 + f2g2 + f3g1_2 + f4g0 + f5g9_38 + f6g8_19 + f7g7_38 +
+            f8g6_19 + f9g5_38;
   long h5 = f0g5 + f1g4 + f2g3 + f3g2 + f4g1 + f5g0 + f6g9_19 + f7g8_19 +
-                 f8g7_19 + f9g6_19;
-  long h6 = f0g6 + f1g5_2 + f2g4 + f3g3_2 + f4g2 + f5g1_2 + f6g0 +
-                 f7g9_38 + f8g8_19 + f9g7_38;
+            f8g7_19 + f9g6_19;
+  long h6 = f0g6 + f1g5_2 + f2g4 + f3g3_2 + f4g2 + f5g1_2 + f6g0 + f7g9_38 +
+            f8g8_19 + f9g7_38;
   long h7 =
       f0g7 + f1g6 + f2g5 + f3g4 + f4g3 + f5g2 + f6g1 + f7g0 + f8g9_19 + f9g8_19;
   long h8 = f0g8 + f1g7_2 + f2g6 + f3g5_2 + f4g4 + f5g3_2 + f6g2 + f7g1_2 +
-                 f8g0 + f9g9_38;
-  long h9 =
-      f0g9 + f1g8 + f2g7 + f3g6 + f4g5 + f5g4 + f6g3 + f7g2 + f8g1 + f9g0;
+            f8g0 + f9g9_38;
+  long h9 = f0g9 + f1g8 + f2g7 + f3g6 + f4g5 + f5g4 + f6g3 + f7g2 + f8g1 + f9g0;
   long carry0;
   long carry1;
   long carry2;
@@ -720,7 +720,7 @@ void fe_mul(int* h, const int* f, const int* g) {
   h[9] = (int)h9;
 }
 
-void fe_neg(int* h, const int* f) {
+void fe_neg(int *h, const int *f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -754,7 +754,7 @@ void fe_neg(int* h, const int* f) {
   h[9] = h9;
 }
 
-void fe_sq(int* h, const int* f) {
+void fe_sq(int *h, const int *f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -901,7 +901,7 @@ void fe_sq(int* h, const int* f) {
   h[9] = (int)h9;
 }
 
-void fe_sq2(int* h, const int* f) {
+void fe_sq2(int *h, const int *f) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -920,11 +920,11 @@ void fe_sq2(int* h, const int* f) {
   int f5_2 = 2 * f5;
   int f6_2 = 2 * f6;
   int f7_2 = 2 * f7;
-  int f5_38 = 38 * f5; 
-  int f6_19 = 19 * f6; 
-  int f7_38 = 38 * f7; 
-  int f8_19 = 19 * f8; 
-  int f9_38 = 38 * f9; 
+  int f5_38 = 38 * f5;
+  int f6_19 = 19 * f6;
+  int f7_38 = 38 * f7;
+  int f8_19 = 19 * f8;
+  int f9_38 = 38 * f9;
   long f0f0 = f0 * (long)f0;
   long f0f1_2 = f0_2 * (long)f1;
   long f0f2_2 = f0_2 * (long)f2;
@@ -1058,7 +1058,7 @@ void fe_sq2(int* h, const int* f) {
   h[9] = (int)h9;
 }
 
-void fe_sub(int* h, const int* f, const int* g) {
+void fe_sub(int *h, const int *f, const int *g) {
   int f0 = f[0];
   int f1 = f[1];
   int f2 = f[2];
@@ -1102,7 +1102,7 @@ void fe_sub(int* h, const int* f, const int* g) {
   h[9] = h9;
 }
 
-void fe_tobytes(unsigned char *s, const int* h) {
+void fe_tobytes(unsigned char *s, const int *h) {
   int h0 = h[0];
   int h1 = h[1];
   int h2 = h[2];
@@ -1135,9 +1135,9 @@ void fe_tobytes(unsigned char *s, const int* h) {
   q = (h7 + q) >> 25;
   q = (h8 + q) >> 26;
   q = (h9 + q) >> 25;
-  
+
   h0 += 19 * q;
-  
+
   carry0 = h0 >> 26;
   h1 += carry0;
   h0 -= carry0 << 26;
@@ -3391,17 +3391,16 @@ void ge_p3_tobytes(unsigned char *s, const ge_p3 *h) {
 static unsigned char equal(signed char b, signed char c) {
   unsigned char ub = b;
   unsigned char uc = c;
-  unsigned char x = ub ^ uc; 
-  uint64_t y = x;            
-  y -= 1;                    
-  y >>= 63;                  
+  unsigned char x = ub ^ uc;
+  uint64_t y = x;
+  y -= 1;
+  y >>= 63;
   return (unsigned char)y;
 }
 
 static unsigned char negative(signed char b) {
-  uint64_t x =
-      b;    
-  x >>= 63; 
+  uint64_t x = b;
+  x >>= 63;
   return (unsigned char)x;
 }
 
@@ -3482,50 +3481,43 @@ void ge_scalarmult_base(ge_p3 *h, const unsigned char *a) {
 
 const char base32_map[33] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-static int test_base32_addr(unsigned char* src, unsigned const char* prefix)
-{
-    const int prefix_length = sizeof(prefix);
+static int test_base32_addr(unsigned char *src, unsigned const char *prefix) {
+  const int prefix_length = sizeof(prefix);
 
-    int didx = 0;
-    int srclen_bits = 32 * 8;
+  int didx = 0;
+  int srclen_bits = 32 * 8;
 
-	for (int i = 0; i < srclen_bits && didx < prefix_length; i += 5)
-    {
-		int sym;
-		int sidx = i / 8;
-		int bit_offs = i % 8;
+  for (int i = 0; i < srclen_bits && didx < prefix_length; i += 5) {
+    int sym;
+    int sidx = i / 8;
+    int bit_offs = i % 8;
 
-        if (bit_offs <= 3)
-        {
-			sym = src[sidx] >> (3 - bit_offs);
-		}
-        else
-        {
-			sym = src[sidx] << (bit_offs - 3);
-			if (i + 1 < srclen_bits)
-				sym |= src[sidx + 1] >> (11 - bit_offs);
-		}
+    if (bit_offs <= 3) {
+      sym = src[sidx] >> (3 - bit_offs);
+    } else {
+      sym = src[sidx] << (bit_offs - 3);
+      if (i + 1 < srclen_bits)
+        sym |= src[sidx + 1] >> (11 - bit_offs);
+    }
 
-		sym &= 0x1f;
+    sym &= 0x1f;
 
-		if (srclen_bits - i < 5)
-			sym &= 0x1f << (5 + i - srclen_bits);
+    if (srclen_bits - i < 5)
+      sym &= 0x1f << (5 + i - srclen_bits);
 
-		if(base32_map[sym] != prefix[didx]) {
-		    break;
-		}
+    if (base32_map[sym] != prefix[didx]) {
+      break;
+    }
 
-		++didx;
-	}
+    ++didx;
+  }
 
-	return didx;
+  return didx;
 }
 
-void kernel ed25519_create_keypair(
-    global const unsigned char *seed,
-    global const unsigned char *prefix,
-    global unsigned char *counts)
-{
+void kernel ed25519_create_keypair(global const unsigned char *seed,
+                                   global const unsigned char *prefix,
+                                   global unsigned char *counts) {
   unsigned char az[64];
   unsigned char pub[32];
 
