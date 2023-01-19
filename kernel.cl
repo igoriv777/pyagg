@@ -8,7 +8,7 @@ typedef struct {
   int X[10];
   int Y[10];
   int Z[10];
-  int T[10]
+  int T[10];
 } ge_p3;
 
 typedef struct {
