@@ -15,44 +15,40 @@ class Batch(NamedTuple):
     run_kernel_event: cl.event_info
 
 
-def run(args: argparse.Namespace):
-    benchmark: bool = args.benchmark
-    prefix: str = args.prefix
-    count: int = args.batch
-    left: int = args.count
+def run(prefix: str, count: int, batch_size: int, benchmark: bool, kernel_path: str):
+    left = count
 
-    ctx = cl.create_some_context()
-
-    mf = cl.mem_flags
-
-    with open(args.kernel, mode="r") as f:
+    with open(kernel_path, mode="r") as f:
         source = f.read()
-
-    program = cl.Program(ctx, source).build(options="-cl-std=CL3.0")
 
     prefix_bytes = prefix.encode("utf-8")
     expected_len = len(prefix_bytes)
 
+    ctx = cl.create_some_context()
+
+    mf = cl.mem_flags
     seed_buffer = cl.Buffer(
-        ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=count * KEY_SIZE)
+        ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=batch_size * KEY_SIZE)
     prefix_buffer = cl.Buffer(
         ctx, mf.READ_ONLY | mf.HOST_WRITE_ONLY, size=len(prefix_bytes))
-    counts_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, size=count)
+    counts_buffer = cl.Buffer(ctx, mf.WRITE_ONLY, size=batch_size)
+
+    program = cl.Program(ctx, source).build(options="-cl-std=CL3.0")
 
     kernel = program.ed25519_create_keypair
     queue = cl.CommandQueue(ctx)
 
     cl.enqueue_copy(queue, prefix_buffer, prefix_bytes)
 
-    counts = np.empty(count, dtype='uint8')
+    counts = np.empty(batch_size, dtype='uint8')
 
     def send_next_batch() -> Batch:
-        seeds = np.random.randint(0, 255, count * KEY_SIZE, dtype='uint8')
+        seeds = np.random.randint(0, 255, batch_size * KEY_SIZE, dtype='uint8')
         cl.enqueue_copy(queue, seed_buffer, seeds, is_blocking=False)
         batch = Batch(
             seeds=seeds,
             run_kernel_event=kernel(
-                queue, [count], None, seed_buffer, prefix_buffer, counts_buffer)
+                queue, [batch_size], None, seed_buffer, prefix_buffer, counts_buffer)
         )
 
         return batch
@@ -75,7 +71,7 @@ def run(args: argparse.Namespace):
         cl.wait_for_events(
             [batch.run_kernel_event, copy_counts])
 
-        total += count
+        total += batch_size
 
         seeds = batch.seeds
         indices = np.where(counts == expected_len)[0]
@@ -120,4 +116,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    run(args)
+    run(prefix=args.prefix, count=args.count, batch_size=args.batch,
+        benchmark=args.benchmark, kernel_path=args.kernel)
